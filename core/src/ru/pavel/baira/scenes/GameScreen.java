@@ -1,4 +1,4 @@
-package ru.pavel.baira.Scenes;
+package ru.pavel.baira.scenes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
