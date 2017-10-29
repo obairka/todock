@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import ru.pavel.baira.TodockGame;
+import ru.pavel.baira.TouchpadBuilder;
 
 /**
  * Created by obairka on 29.10.17.
@@ -203,30 +204,18 @@ public class GameScreen implements Screen {
     private void addTouchpad(){
         Viewport viewport = new FitViewport(WORLD_SIZE.x, WORLD_SIZE.y);
         stage2 = new Stage(viewport);
-        //Create a touchpad skin
-        Skin touchpadSkin = new Skin();
-        //Set background image
-        touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
-        //Set knob image
-        touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
-        //Create TouchPad Style
-        Touchpad.TouchpadStyle touchpadStyle = new Touchpad.TouchpadStyle();
-        //Create Drawable's from TouchPad skin
-        Drawable touchBackground = touchpadSkin.getDrawable("touchBackground");
-        Drawable touchKnob = touchpadSkin.getDrawable("touchKnob");
-        //Apply the Drawables to the TouchPad Style
-        touchpadStyle.background = touchBackground;
-        touchpadStyle.knob = touchKnob;
-        //Create new TouchPad with the created style
-        touchpad = new Touchpad(50, touchpadStyle);
-        //setBounds(x,y,width,height)
-        touchpad.setBounds(WORLD_SIZE.x - 15 - 150, 15, 150, 150);
+
+        touchpad = new TouchpadBuilder()
+                .withPosition(WORLD_SIZE.x - 15 - 150, 15)
+                .withSize(150, 150)
+                .build();
 
         stage2.addActor(touchpad);
 
-        touchpad2 = new Touchpad(50, touchpadStyle);
-        //setBounds(x,y,width,height)
-        touchpad2.setBounds(15, 15, 150, 150);
+        touchpad2 = new TouchpadBuilder()
+                .withPosition(15, 15)
+                .withSize(150, 150)
+                .build();
 
         stage2.addActor(touchpad2);
 
