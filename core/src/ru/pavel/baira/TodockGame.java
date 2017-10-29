@@ -2,7 +2,7 @@ package ru.pavel.baira;
 
 import com.badlogic.gdx.Game;
 
-import ru.pavel.baira.Scenes.GameScreen;
+import ru.pavel.baira.scenes.GameScreen;
 
 public class TodockGame extends Game {
 	@Override
