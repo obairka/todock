@@ -15,8 +15,8 @@ public class WorldFactory {
     public Universe getUniverse() {
         World world = new World(new Vector2(0, 0), true);
 
-        Body player = bodyFactory.getPlayer();
-        Body iss = bodyFactory.getISS();
+        Body player = bodyFactory.getPlayer(world);
+        Body iss = bodyFactory.getISS(world);
 
         Universe universe = new Universe();
         universe.world = world;

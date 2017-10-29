@@ -13,13 +13,7 @@ public class BodyFactory {
     public static final int IIS_WIDTH = 100;
     public static final int IIS_HEIGHT = 50;
 
-    private World world;
-
-    public BodyFactory(World world) {
-        this.world = world;
-    }
-
-    public Body getPlayer() {
+    public Body getPlayer(World world) {
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.setAsBox(PLAYER_WIDTH, PLAYER_HEIGHT);
 
@@ -32,7 +26,7 @@ public class BodyFactory {
                 .build();
     }
 
-    public Body getISS() {
+    public Body getISS(World world) {
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.setAsBox(IIS_WIDTH, IIS_HEIGHT);
 
