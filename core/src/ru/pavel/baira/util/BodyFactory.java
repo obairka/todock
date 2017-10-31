@@ -10,12 +10,12 @@ public class BodyFactory {
     public static final int PLAYER_WIDTH = 40;
     public static final int PLAYER_HEIGHT = 20;
 
-    public static final int IIS_WIDTH = 100;
+    public static final int IIS_WIDTH = 50;
     public static final int IIS_HEIGHT = 50;
 
     public Body getPlayer(World world) {
         PolygonShape polygonShape = new PolygonShape();
-        polygonShape.setAsBox(PLAYER_WIDTH, PLAYER_HEIGHT);
+        polygonShape.setAsBox(PLAYER_WIDTH / 2, PLAYER_HEIGHT / 2);
 
         return new BodyBuilder(world)
                 .setBodyType(BodyDef.BodyType.DynamicBody)

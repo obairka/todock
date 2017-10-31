@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import ru.pavel.baira.TodockGame;
+import ru.pavel.baira.scenes.stage.Player;
 import ru.pavel.baira.util.BodyFactory;
 import ru.pavel.baira.util.GeomUtils;
 import ru.pavel.baira.util.TouchpadBuilder;
@@ -31,6 +32,7 @@ public class GameScreen implements Screen {
     private Box2DDebugRenderer renderer;
 
     private Stage fixedStage;
+    private Stage worldStage;
 
     private Touchpad dirTouchpad;
     private Touchpad angleTouchpad;
@@ -44,12 +46,11 @@ public class GameScreen implements Screen {
         cameraViewport = new FitViewport(WORLD_SIZE.x, WORLD_SIZE.y, camera);
         renderer = new Box2DDebugRenderer();
 
-        WorldFactory worldFactory = new WorldFactory(new BodyFactory());
+        // Create world
+        WorldFactory worldFactory = new WorldFactory(new BodyFactory(), worldStage = new Stage(cameraViewport));
         universe = worldFactory.getUniverse();
 
-        universe.player.setTransform(200, 200, 0);
-        universe.iss.setTransform(300, 300, 0);
-
+        // Create touchpad
         fixedStage = new Stage(new FitViewport(WORLD_SIZE.x, WORLD_SIZE.y));
         Gdx.input.setInputProcessor(fixedStage);
 
@@ -79,10 +80,20 @@ public class GameScreen implements Screen {
         this.handleInput();
 
         camera.setToOrtho(true);
-        camera.rotate(GeomUtils.toDegrees(universe.player.getAngle()) + 90);
+        camera.rotate(GeomUtils.toDegrees(universe.player.body.getAngle()) + 90);
+
+        float maxZoom = 0.1f;
+        float minZoom = 1;
+
+        float len = universe.player.getPosition().sub(universe.iss.getPosition()).len();
+
+        camera.zoom = (float) Math.max(Math.sqrt(len) / 7f, 1f);
         camera.position.set(universe.player.getPosition().x, universe.player.getPosition().y, 0);
 
         camera.update();
+
+        worldStage.act(delta);
+        worldStage.draw();
 
         fixedStage.act(delta);
         fixedStage.draw();
@@ -120,49 +131,26 @@ public class GameScreen implements Screen {
 
     private void handleInput()
     {
-        int force = 70;
-
-        float playerAngle = GeomUtils.toDegrees(universe.player.getAngle());
-
-        Vector2 dir = new Vector2(1, 0).rotate(playerAngle);
-        Vector2 impulse;
-
         if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            impulse = new Vector2(-dir.x, dir.y).scl(force);
-            universe.player.applyLinearImpulse(impulse, universe.player.getPosition(), true);
+            universe.player.enableEngine(Player.EngineDirection.DOWN, 1f);
         }
-
         if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            impulse = new Vector2(dir.x, dir.y).scl(force);
-            universe.player.applyLinearImpulse(impulse, universe.player.getPosition(), true);
+            universe.player.enableEngine(Player.EngineDirection.UP, 1f);
         }
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            impulse = new Vector2(-dir.y, dir.x).scl(force);
-            universe.player.applyLinearImpulse(impulse, universe.player.getPosition(), true);
+            universe.player.enableEngine(Player.EngineDirection.RIGHT, 1f);
         }
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            impulse = new Vector2(dir.y, -dir.x).scl(force);
-            universe.player.applyLinearImpulse(impulse, universe.player.getPosition(), true);
+            universe.player.enableEngine(Player.EngineDirection.LEFT, 1f);
         }
-
         if(Gdx.input.isKeyPressed(Input.Keys.E)) {
-            Vector2 position = universe.player.getPosition();
-            position = position.sub(dir.cpy().scl(-8));
-            impulse = new Vector2(-dir.y, dir.x).scl(force / 2);
-            universe.player.applyLinearImpulse(impulse, position, true);
+            universe.player.enableEngine(Player.EngineDirection.ROTATE_ANTI_CLOCKWISE, 1f);
         }
         if(Gdx.input.isKeyPressed(Input.Keys.Q)) {
-            Vector2 position = universe.player.getPosition();
-            position = position.sub(dir.cpy().scl(-8));
-            impulse = new Vector2(dir.y, -dir.x).scl(force / 2);
-            universe.player.applyLinearImpulse(impulse, position, true);
+            universe.player.enableEngine(Player.EngineDirection.ROTATE_CLOCKWISE, 1f);
         }
 
-        Vector2 impulseY = new Vector2(dir).scl(force).scl(dirTouchpad.getKnobPercentY());
-        Vector2 impulseX = new Vector2(-dir.y, dir.x).scl(force).scl(dirTouchpad.getKnobPercentX());
-        impulse = impulseX.add(impulseY);
-        universe.player.applyLinearImpulse(impulse, universe.player.getPosition(), true);
-
-        universe.player.applyAngularImpulse(angleTouchpad.getKnobPercentX() * force , true);
+        universe.player.enableEngine(Player.EngineDirection.UP, dirTouchpad.getKnobPercentY());
+        universe.player.enableEngine(Player.EngineDirection.ROTATE_CLOCKWISE, angleTouchpad.getKnobPercentX());
     }
 }
